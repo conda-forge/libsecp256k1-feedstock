@@ -13,7 +13,6 @@ set -eox pipefail
             '--enable-module-ecdh' \
             '--enable-benchmark=no' \
             '--enable-tests=yes' \
-            '--enable-openssl-tests=no' \
             '--enable-exhaustive-tests=yes' \
             --prefix=${PREFIX}
 

@@ -27,7 +27,7 @@ source:
 
 build:
   number: 0
-  skip: true  # [not osx and not py==3.9]
+  skip: true  # [not win and not py==3.9]
 
 requirements:
   build:
