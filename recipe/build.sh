@@ -21,8 +21,10 @@ make check
 
 make install
 
-ls -lrt ${PREFIX}/lib
-ls -lrt ${PREFIX}/include
-ls -lrt ${PREFIX}/lib/pkgconfig
-cat ${PREFIX}/lib/pkgconfig/libsecp256k1.pc
+# if [[ "$target_platform" == win* ]]; then
+#     mv ${PREFIX}/lib/secp256k1.dll.lib ${PREFIX}/lib/libsecp256k1.dll.lib
+#     mv ${PREFIX}/lib/secp256k1.lib ${PREFIX}/lib/libsecp256k1.lib
+#
+#     mv ${PREFIX}/bin/secp256k1-?.dll ${PREFIX}/bin/libsecp256k1-1.dll
+# fi
 
