@@ -22,9 +22,11 @@ make check
 make install
 
 if [[ "$target_platform" == win* ]]; then
-    /usr/bin/install -c -m 644 ${PREFIX}/lib/secp256k1.dll.lib ${PREFIX}/lib/libsecp256k1.dll.lib
-    /usr/bin/install -c -m 644 ${PREFIX}/lib/secp256k1.lib ${PREFIX}/lib/libsecp256k1.lib
+  mkdir -p ${PREFIX}/Library/bin ${PREFIX}/Library/lib ${PREFIX}/Library/lib/pkgconfig
+  /usr/bin/install -c -m 644 ${PREFIX}/lib/secp256k1.dll.lib ${PREFIX}/Library/lib/libsecp256k1.dll.lib
+  /usr/bin/install -c -m 644 ${PREFIX}/lib/secp256k1.lib ${PREFIX}/Library/lib/libsecp256k1.lib
+  /usr/bin/install -c -m 644 ${PREFIX}/lib/pkgconfig/libsecp256k1.pc ${PREFIX}/Library/lib/pkgconfig/libsecp256k1.pc
 
-    /usr/bin/install -c ${PREFIX}/bin/secp256k1-?.dll ${PREFIX}/bin/libsecp256k1-1.dll
+  /usr/bin/install -c ${PREFIX}/bin/secp256k1-?.dll ${PREFIX}/Library/bin/libsecp256k1-1.dll
 fi
 
