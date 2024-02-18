@@ -27,7 +27,7 @@ source:
   #   - 0001_conda_relocatable.patch
 
 build:
-  number: 0
+  number: 1
   skip: true  # [not win]
 
 requirements:
