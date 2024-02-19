@@ -48,7 +48,7 @@ cmake --build .
 if %ERRORLEVEL% neq 0 exit 1
 cmake --build . --target tests
 if %ERRORLEVEL% neq 0 exit 1
-cmake --build . --target install
+cmake --build . --target install --config Release --clean-first
 if %ERRORLEVEL% neq 0 exit 1
 
 cd ..
