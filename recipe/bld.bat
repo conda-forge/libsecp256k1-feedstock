@@ -43,10 +43,6 @@ cmake %CMAKE_ARGS% ^
     -D SECP256K1_BUILD_EXHAUSTIVE_TESTS=OFF
 if %ERRORLEVEL% neq 0 exit 1
 
-cmake --build .
-if %ERRORLEVEL% neq 0 exit 1
-cmake --build . --target tests
-if %ERRORLEVEL% neq 0 exit 1
 cmake --build . --target install --config Release --clean-first
 if %ERRORLEVEL% neq 0 exit 1
 
