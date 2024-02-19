@@ -8,8 +8,10 @@ def main(*args):
     with open(txt) as f:
         found = False
         for line in f:
+            line = line.replace('\\', '\\\\')
             for w in words:
-                if re.search(rf'\b{w}\b', rf'{line}'):
+                w = w.replace('\\', '\\\\')
+                if re.search(w, line):
                     print(line)
                     found = True
                     break
