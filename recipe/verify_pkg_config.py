@@ -9,7 +9,7 @@ def main(*args):
         found = False
         for line in f:
             for w in words:
-                if re.search(w, line):
+                if re.search(r'\b' + w + r'\b', line):
                     print(line)
                     found = True
                     break
