@@ -61,8 +61,6 @@ rmdir /s /q %BUILD_DIR%
   set "LOCAL_TEST_DIR=%~2"
   set "LOCAL_SRC_DIR_FILES=%~3"
 
-  echo DEBUG %LOCAL_SRC_DIR% to %LOCAL_TEST_DIR% for %LOCAL_SRC_DIR_FILES%
-
   for %%f in (%LOCAL_SRC_DIR_FILES%) do (
     set "FULL_PATH=%%~f"
     set "FILE=%%~nxf"
