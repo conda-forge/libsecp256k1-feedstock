@@ -48,6 +48,9 @@ if %ERRORLEVEL% neq 0 exit 1
 cmake --build . --target install --config Release --clean-first
 if %ERRORLEVEL% neq 0 exit 1
 
+:: Duplicate windows library for -lsecp256k1 (from pkg-config) to work with MSVC
+copy /y %PREFIX%\Library\lib\libsecp256k1.lib %PREFIX%\Library\lib\secp256k1.lib
+
 cd ..
 rmdir /s /q %BUILD_DIR%
 
