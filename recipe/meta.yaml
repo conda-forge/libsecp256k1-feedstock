@@ -95,7 +95,7 @@ outputs:
 
         # CMake test
         - cd shared_standalone_tests/src  # [unix]
-        - cd shared_standalone_tests\\src && dir  # [win]
+        - cd shared_standalone_tests\\src  # [win]
 
         - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=ON ${CMAKE_ARGS} .   # [unix]
         - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=ON %CMAKE_ARGS% .  # [win]
