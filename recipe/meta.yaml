@@ -68,6 +68,7 @@ outputs:
         - python
       files:
         - shared_standalone_tests/
+        - verify_pkg_config.py
       commands:
         # Headers
         {% for header in headers %}
@@ -83,7 +84,8 @@ outputs:
         # pkg-config files for shared libraries
         - test -f ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
-        - pkg-config --cflags --libs {{ name }}
+        - pkg-config --cflags --libs {{ name }} > pkgconfig.txt
+        - python verify_pkg_config.py pkgconfig.txt 'prefix=%LIBRARY_LIB%'  # [win]
         # - python -c "with open('pkgconfig.txt') as f: assert '\b-I${PREFIX}/include\b' in f.read()"  # [unix]
         # - python -c "with open('pkgconfig.txt') as f: assert '\b-L${PREFIX}/lib\b' in f.read()"  # [unix]
         # - python -c "with open('pkgconfig.txt') as f: assert '-I%LIBRARY_INC%' in f.read()"  # [win]
