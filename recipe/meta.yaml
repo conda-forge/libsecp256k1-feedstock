@@ -86,8 +86,8 @@ outputs:
         - pkg-config --cflags --libs {{ name }} > pkgconfig.txt
         - python -c "with open('pkgconfig.txt') as f: assert '\b-I${PREFIX}/include\b' in f.read()"  # [unix]
         - python -c "with open('pkgconfig.txt') as f: assert '\b-L${PREFIX}/lib\b' in f.read()"  # [unix]
-        - python -c "with open('pkgconfig.txt') as f: assert '\b-I%LIBRARY_INC%\b' in f.read()"  # [win]
-        - python -c "with open('pkgconfig.txt') as f: assert '\b-L%LIBRARY_LIB%\b' in f.read()"  # [win]
+        - python -c "with open('pkgconfig.txt') as f: assert '-I%LIBRARY_INC%' in f.read()"  # [win]
+        - python -c "with open('pkgconfig.txt') as f: assert '-L%LIBRARY_LIB%' in f.read()"  # [win]
 
         # cmake files for shared libraries
         - if not exist %LIBRARY_LIB%\\cmake\\{{ name }}\\{{ name }}-config.cmake exit 1  # [win]
