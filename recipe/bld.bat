@@ -10,9 +10,9 @@ echo DEBUG SRC_DIR is %SRC_DIR% or "%SRC_DIR%" or !SRC_DIR! or "!SRC_DIR!"
 
 dir "%RECIPE_DIR%\!TEST_DIR!"
 
-copy "%SRC_DIR%\src\tests.c" "%RECIPE_DIR%\!TEST_DIR!\src"
-copy "%SRC_DIR%\src\tests_exhaustive.c" "%RECIPE_DIR%\!TEST_DIR!\src"
-copy "%SRC_DIR%\src\secp256k1.c" "%RECIPE_DIR%\!TEST_DIR!\src"
+copy "%SRC_DIR%\src\tests.c" "%RECIPE_DIR%\!TEST_DIR!\src" > nul
+copy "%SRC_DIR%\src\tests_exhaustive.c" "%RECIPE_DIR%\!TEST_DIR!\src" > nul
+copy "%SRC_DIR%\src\secp256k1.c" "%RECIPE_DIR%\!TEST_DIR!\src" > nul
 
 call :CopyFiles "%SRC_DIR%" "%RECIPE_DIR%\!TEST_DIR!" "%SRC_DIR%\src\*.h"
 call :CopyFiles "%SRC_DIR%" "%RECIPE_DIR%\!TEST_DIR!" "%SRC_DIR%\src\modules\*\*.h"
