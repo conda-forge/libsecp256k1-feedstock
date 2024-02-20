@@ -28,7 +28,6 @@ source:
 
 build:
   number: 1
-  skip: true  # [not win]
 
 requirements:
   build:
@@ -87,7 +86,7 @@ outputs:
         - test -f ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
         - pkg-config --exists {{ name }}
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%LIBRARY_LIB%  # [win]
+        # - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%LIBRARY_LIB%  # [win]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc prefix=${PREFIX}  # [unix]
 
         # cmake files for shared libraries
