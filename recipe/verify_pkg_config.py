@@ -3,9 +3,11 @@ def main(*args):
     words = args[1:]
 
     for w in words:
+        w = w.replace('\\', '\\\\').strip()
         with open(txt) as f:
             found = False
             for line in f:
+                line = line.replace('\\', '\\\\').rstrip()
                 if w in line:
                     print('PASS')
                     found = True
