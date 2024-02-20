@@ -86,25 +86,19 @@ outputs:
         # pkg-config files for shared libraries
         - test -f ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
-        - pkg-config --cflags --libs {{ name }} > pkgconfig.txt
-        - python verify_pkg_config.py pkgconfig.txt 'prefix=%LIBRARY_LIB%'  # [win]
-        # - python -c "with open('pkgconfig.txt') as f: assert '\b-I${PREFIX}/include\b' in f.read()"  # [unix]
-        # - python -c "with open('pkgconfig.txt') as f: assert '\b-L${PREFIX}/lib\b' in f.read()"  # [unix]
-        # - python -c "with open('pkgconfig.txt') as f: assert '-I%LIBRARY_INC%' in f.read()"  # [win]
-        # - python -c "with open('pkgconfig.txt') as f: assert '-L%LIBRARY_LIB%' in f.read()"  # [win]
+        - pkg-config --exists {{ name }}
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%LIBRARY_LIB%  # [win]
+        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc prefix=${PREFIX}  # [unix]
 
         # cmake files for shared libraries
         - if not exist %LIBRARY_LIB%\\cmake\\{{ name }}\\{{ name }}-config.cmake exit 1  # [win]
         - test -f ${PREFIX}/lib/cmake/{{ name }}/{{ name }}-config.cmake  # [unix]
 
         # CMake test
-        - cd shared_standalone_tests/src  # [unix]
-        - cd shared_standalone_tests\\src  # [win]
-
-        - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON ${CMAKE_ARGS} .   # [unix]
-        - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON %CMAKE_ARGS% .  # [win]
-        - cmake --build . --target check
-        - cmake --build . --target clean
+        - cd shared_standalone_tests
+        - cmake -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=ON -DBUILD_SHARED_LIBS=ON ${CMAKE_ARGS} -S src -B build  # [unix]
+        - cmake -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=ON -DBUILD_SHARED_LIBS=ON %CMAKE_ARGS% -S src -B build  # [win]
+        - cd build && cmake --build .  && cmake --build . --target check && cmake --build . --target clean
 
         - cd ../..  # [unix]
         - cd ..\\..  # [win]
