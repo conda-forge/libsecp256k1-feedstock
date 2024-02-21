@@ -14,7 +14,7 @@ def main(*args):
                 line = line.replace('/', '-')
                 line = line.replace('\\', '-')
                 if w in line:
-                    print('PASS')
+                    print(f'   {w[10:]} Found in {txt}')
                     found = True
                     break
             if not found:
