@@ -3,11 +3,16 @@ def main(*args):
     words = args[1:]
 
     for w in words:
-        w = w.replace('\\', '\\\\').strip()
+        w = w.strip()
+        w = w.replace('/', '-')
+        w = w.replace('\\', '-')
         with open(txt) as f:
             found = False
             for line in f:
-                line = line.replace('\\', '\\\\').rstrip()
+                # Could contain / or \ as path separators
+                line = line.rstrip()
+                line = line.replace('/', '-')
+                line = line.replace('\\', '-')
                 if w in line:
                     print('PASS')
                     found = True
