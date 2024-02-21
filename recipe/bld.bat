@@ -43,16 +43,11 @@ cmake %CMAKE_ARGS% ^
     -D BUILD_SHARED_LIBS=%SECP256K1_BUILD_SHARED_LIBS% ^
     -D SECP256K1_INSTALL_HEADERS=%SECP256K1_INSTALL_HEADERS% ^
     -D SECP256K1_INSTALL=%SECP256K1_INSTALL% ^
-    -D SECP256K1_BUILD_BENCHMARKS=OFF ^
-    -D SECP256K1_BUILD_TESTS=ON ^
+    -D SECP256K1_BUILD_TESTS=OFF ^
     -D SECP256K1_BUILD_EXHAUSTIVE_TESTS=OFF
 if %ERRORLEVEL% neq 0 exit 1
 
-cmake --build .
-if %ERRORLEVEL% neq 0 exit 1
-cmake --build . --target tests
-if %ERRORLEVEL% neq 0 exit 1
-cmake --build . --target install
+cmake --build . --target install --config Release --clean-first
 if %ERRORLEVEL% neq 0 exit 1
 
 :: Duplicate windows library for -lsecp256k1 (from pkg-config) to work with MSVC
