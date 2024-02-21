@@ -66,6 +66,7 @@ outputs:
         - pkg-config
       files:
         - shared_standalone_tests/
+        - verify_pkg_config.py
       commands:
         # Headers
         {% for header in headers %}
@@ -83,6 +84,9 @@ outputs:
         - test -f ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
         - pkg-config --cflags --libs {{ name }}
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%PREFIX%  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc libdir=\${exec_prefix}/Library/lib  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc includedir=\${prefix}/Library/include  # [win]
 
         # cmake files for shared libraries
         - if not exist %LIBRARY_LIB%\\cmake\\{{ name }}\\{{ name }}-config.cmake exit 1  # [win]
