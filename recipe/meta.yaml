@@ -89,10 +89,8 @@ outputs:
         - pkg-config --exists {{ name }}
         # Path separators will not match with findstr
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%PREFIX%  # [win]
-        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc libdir=\${exec_prefix}/Library/lib  # [unix]
-        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc includedir=\${prefix}/Library/include  # [unix]
-        # - findstr libdir=*Library*lib %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
-        # - findstr includedir=*Library*include %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
+        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc libdir=\${exec_prefix}/Library/lib  # [win]
+        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc includedir=\${prefix}/Library/include  # [win]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc prefix=${PREFIX}  # [unix]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc libdir=\${exec_prefix}\lib  # [unix]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc includedir=\${prefix}/include  # [unix]
