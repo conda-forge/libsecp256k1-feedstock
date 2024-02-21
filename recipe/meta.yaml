@@ -75,6 +75,7 @@ outputs:
 
         # Shared libraries
         - test -f ${PREFIX}/lib/{{ name }}${SHLIB_EXT}  # [unix]
+        - if not exist %LIBRARY_LIB%\\secp256k1.lib exit 1  # [win]
         - if not exist %LIBRARY_LIB%\\{{ name }}.lib exit 1  # [win]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
 
