@@ -88,7 +88,11 @@ outputs:
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
         - pkg-config --exists {{ name }}
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=  # [win]
-        - findstr /C:prefix= %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
+        - findstr prefix= %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
+        - findstr prefix=%PREFIX% %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
+        - findstr libdir=\${exec_prefix}\\Library\\lib %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
+        - findstr includedir=\${prefix}\\Library\\include %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
+        - findstr prefix=%PREFIX% libdir=\${exec_prefix}\\Library\\lib %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
         - grep -q "prefix=${PREFIX}" ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]
         # - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc prefix=${PREFIX}  # [unix]
 
