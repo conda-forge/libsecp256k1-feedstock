@@ -89,7 +89,10 @@ outputs:
         - pkg-config --exists {{ name }}
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=  # [win]
         - findstr prefix= %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
-        - findstr prefix=%PREFIX% %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
+        - findstr libdir= %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
+        - findstr includedir= %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
+        - findstr %PREFIX% %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
+        - findstr Library %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
         - findstr libdir=\${exec_prefix}\\Library\\lib %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
         - findstr includedir=\${prefix}\\Library\\include %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
         - findstr prefix=%PREFIX% libdir=\${exec_prefix}\\Library\\lib %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc  # [win]
