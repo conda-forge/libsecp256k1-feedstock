@@ -6,7 +6,8 @@
       "secp256k1_recovery.h",
       "secp256k1_extrakeys.h",
       "secp256k1_schnorrsig.h",
-      "secp256k1_ellswift.h"] %}
+      "secp256k1_ellswift.h"
+] %}
 {% set version = "0.4.1" %}
 # Look in the CMakeLists.txt for the updated library version (not the same as
 # the project version). Upstream does some strange math to convert lib_version
