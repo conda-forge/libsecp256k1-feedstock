@@ -99,8 +99,7 @@ outputs:
         - cmake -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=ON -DBUILD_SHARED_LIBS=ON %CMAKE_ARGS% -S src -B build  # [win]
         - cd build && cmake --build .  && cmake --build . --target check && cmake --build . --target clean
 
-        - cd ../..  # [unix]
-        - cd ..\\..  # [win]
+        - cd ..
         - rm -rf shared_standalone_tests  # [unix]
         - rmdir /s /q shared_standalone_tests  # [win]
       downstreams:
