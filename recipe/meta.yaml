@@ -6,7 +6,8 @@
       "secp256k1_recovery.h",
       "secp256k1_extrakeys.h",
       "secp256k1_schnorrsig.h",
-      "secp256k1_ellswift.h"] %}
+      "secp256k1_ellswift.h"
+] %}
 {% set version = "0.4.1" %}
 # Look in the CMakeLists.txt for the updated library version (not the same as
 # the project version). Upstream does some strange math to convert lib_version
@@ -21,13 +22,9 @@ package:
 source:
   url: https://github.com/bitcoin-core/secp256k1/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 31b1a03c7365dbce7aff4be9526243da966c58a8b88b6255556d51b3016492c5
-  patches:
-    # Use the /opt/anaconda1anaconda2anaconda3 prefix for the conda build relocatable
-    # https://docs.conda.io/projects/conda-build/en/stable/resources/make-relocatable.html
-    - 0001_conda_relocatable.patch
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
@@ -42,15 +39,16 @@ outputs:
       run_exports:
         - {{ pin_subpackage('libsecp256k1-' ~ so_major_version) }}
     files:
-      - include/secp256k1*             # [unix]
-      - Library\\include\\secp256k1*   # [win]
-      - lib/{{ name }}.so              # [linux]
-      - lib/{{ name }}.dylib           # [osx]
-      - Library\\lib\\{{ name }}.lib   # [win]
-      - lib/pkgconfig/{{ name }}.pc             # [unix]
+      - include/secp256k1*  # [unix]
+      - Library\\include\\secp256k1*  # [win]
+      - lib/{{ name }}.so  # [linux]
+      - lib/{{ name }}.dylib  # [osx]
+      - Library\\lib\\{{ name }}.lib  # [win]
+      - Library\\lib\\secp256k1.lib  # [win]
+      - lib/pkgconfig/{{ name }}.pc  # [unix]
       - Library\\lib\\pkgconfig\\{{ name }}.pc  # [win]
-      - lib/cmake/{{ name }}              # [unix]
-      - Library\\lib\\cmake\\{{ name }}   # [win]
+      - lib/cmake/{{ name }}  # [unix]
+      - Library\\lib\\cmake\\{{ name }}  # [win]
     requirements:
       build:
         - {{ compiler('c') }}
@@ -64,8 +62,10 @@ outputs:
         - make
         - cmake >=3.26
         - pkg-config
+        - python
       files:
         - shared_standalone_tests/
+        - verify_pkg_config.py
       commands:
         # Headers
         {% for header in headers %}
@@ -75,30 +75,32 @@ outputs:
 
         # Shared libraries
         - test -f ${PREFIX}/lib/{{ name }}${SHLIB_EXT}  # [unix]
+        - if not exist %LIBRARY_LIB%\\secp256k1.lib exit 1  # [win]
         - if not exist %LIBRARY_LIB%\\{{ name }}.lib exit 1  # [win]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
 
         # pkg-config files for shared libraries
         - test -f ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
-        - pkg-config --cflags --libs {{ name }}
+        - pkg-config --exists {{ name }}
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%PREFIX%  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "libdir=${exec_prefix}/Library/lib"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "includedir=${prefix}/Library/include"  # [win]
+        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc prefix=${PREFIX}  # [unix]
+        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "libdir=\${exec_prefix}/lib"  # [unix]
+        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "includedir=\${prefix}/include"  # [unix]
 
         # cmake files for shared libraries
         - if not exist %LIBRARY_LIB%\\cmake\\{{ name }}\\{{ name }}-config.cmake exit 1  # [win]
         - test -f ${PREFIX}/lib/cmake/{{ name }}/{{ name }}-config.cmake  # [unix]
 
         # CMake test
-        - cd shared_standalone_tests/src  # [unix]
-        - cd shared_standalone_tests\\src && dir  # [win]
+        - cd shared_standalone_tests
+        - cmake -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=ON -DBUILD_SHARED_LIBS=ON ${CMAKE_ARGS} -S src -B build  # [unix]
+        - cmake -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=ON -DBUILD_SHARED_LIBS=ON %CMAKE_ARGS% -S src -B build  # [win]
+        - cd build && cmake --build .  && cmake --build . --target check && cmake --build . --target clean
 
-        - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=ON ${CMAKE_ARGS} .   # [unix]
-        - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=ON %CMAKE_ARGS% .  # [win]
-        - cmake --build .
-        - cmake --build . --target check
-        - cmake --build . --target clean
-
-        - cd ../..  # [unix]
-        - cd ..\\..  # [win]
+        - cd ..
         - rm -rf shared_standalone_tests  # [unix]
         - rmdir /s /q shared_standalone_tests  # [win]
       downstreams:
@@ -110,22 +112,23 @@ outputs:
       run_exports:
         - {{ pin_subpackage('libsecp256k1-' ~ so_major_version) }}
     files:
-      - lib/libsecp256k1.so.{{ so_major_version }}                 # [linux]
-      - lib/libsecp256k1.so.{{ so_version }}                       # [linux]
-      - lib/libsecp256k1.{{ so_major_version }}.dylib              # [osx]
+      - lib/{{ name }}.so.{{ so_major_version }}  # [linux]
+      - lib/{{ name }}.so.{{ so_version }}  # [linux]
+      - lib/{{ name }}.{{ so_major_version }}.dylib  # [osx]
       - Library\\bin\\{{ name }}-{{ so_major_version }}.dll   # [win]
     requirements:
       build:
         - {{ compiler('c') }}
     test:
       commands:
-        - test ! -f ${PREFIX}/include/libsecp256k1.h         # [unix]
-        - if exist %LIBRARY_INC%\\libsecp256k1.h exit 1      # [win]
-        - test ! -f ${PREFIX}/lib/libsecp256k1${SHLIB_EXT}   # [unix]
-        - if exist %LIBRARY_LIB%\\libsecp256k1.lib exit 1    # [win]
-        - test -f ${PREFIX}/lib/libsecp256k1.so.{{ so_major_version }}           # [linux]
-        - test -f ${PREFIX}/lib/libsecp256k1.so.{{ so_version }}                 # [linux]
-        - test -f ${PREFIX}/lib/libsecp256k1.{{ so_major_version }}.dylib        # [osx]
+        - test ! -f ${PREFIX}/include/secp256k1.h  # [unix]
+        - if exist %LIBRARY_INC%\\secp256k1.h exit 1  # [win]
+        - test ! -f ${PREFIX}/lib/{{ name }}{SHLIB_EXT}  # [unix]
+        - if exist %LIBRARY_LIB%\\{{ name }}.lib exit 1  # [win]
+        - if exist %LIBRARY_LIB%\\secp256k1.lib exit 1  # [win]
+        - test -f ${PREFIX}/lib/{{ name }}.so.{{ so_major_version }}  # [linux]
+        - test -f ${PREFIX}/lib/{{ name }}.so.{{ so_version }}  # [linux]
+        - test -f ${PREFIX}/lib/{{ name }}.{{ so_major_version }}.dylib  # [osx]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
 
 about:
