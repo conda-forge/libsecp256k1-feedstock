@@ -86,8 +86,8 @@ outputs:
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
         - pkg-config --exists {{ name }}
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%PREFIX%  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc libdir=\${exec_prefix}/Library/lib  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc includedir=\${prefix}/Library/include  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "libdir=${exec_prefix}/Library/lib"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "includedir=${prefix}/Library/include"  # [win]
 
         # cmake files for shared libraries
         - if not exist %LIBRARY_LIB%\\cmake\\{{ name }}\\{{ name }}-config.cmake exit 1  # [win]
@@ -129,6 +129,7 @@ outputs:
         - if exist %LIBRARY_INC%\\libsecp256k1.h exit 1      # [win]
         - test ! -f ${PREFIX}/lib/libsecp256k1${SHLIB_EXT}   # [unix]
         - if exist %LIBRARY_LIB%\\libsecp256k1.lib exit 1    # [win]
+        - if exist %LIBRARY_LIB%\\secp256k1.lib exit 1    # [win]
         - test -f ${PREFIX}/lib/libsecp256k1.so.{{ so_major_version }}           # [linux]
         - test -f ${PREFIX}/lib/libsecp256k1.so.{{ so_version }}                 # [linux]
         - test -f ${PREFIX}/lib/libsecp256k1.{{ so_major_version }}.dylib        # [osx]

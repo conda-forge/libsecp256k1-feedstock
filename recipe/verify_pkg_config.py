@@ -14,10 +14,11 @@ def main(*args):
                 line = line.replace('/', '-')
                 line = line.replace('\\', '-')
                 if w in line:
-                    print(f'   {w[10:]} Found in {txt}')
+                    print(f'   {w[:15]} Found in {txt}')
                     found = True
                     break
             if not found:
+                print(f'   {w[:15]} NOT in {txt}')
                 exit(1)
 
 
