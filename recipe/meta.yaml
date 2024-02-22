@@ -21,10 +21,6 @@ package:
 source:
   url: https://github.com/bitcoin-core/secp256k1/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 31b1a03c7365dbce7aff4be9526243da966c58a8b88b6255556d51b3016492c5
-  patches:
-    # Use the /opt/anaconda1anaconda2anaconda3 prefix for the conda build relocatable
-    # https://docs.conda.io/projects/conda-build/en/stable/resources/make-relocatable.html
-    - 0001_conda_relocatable.patch
 
 build:
   number: 1
@@ -47,6 +43,7 @@ outputs:
       - lib/{{ name }}.so              # [linux]
       - lib/{{ name }}.dylib           # [osx]
       - Library\\lib\\{{ name }}.lib   # [win]
+      - Library\\lib\\secp256k1.lib   # [win]
       - lib/pkgconfig/{{ name }}.pc             # [unix]
       - Library\\lib\\pkgconfig\\{{ name }}.pc  # [win]
       - lib/cmake/{{ name }}              # [unix]
