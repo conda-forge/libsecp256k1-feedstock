@@ -91,14 +91,10 @@ outputs:
         - test -f ${PREFIX}/lib/cmake/{{ name }}/{{ name }}-config.cmake  # [unix]
 
         # CMake test
-        - cd shared_standalone_tests/src  # [unix]
-        - cd shared_standalone_tests\\src && dir  # [win]
-
-        - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=ON ${CMAKE_ARGS} .  # [unix]
-        - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=ON %CMAKE_ARGS% .  # [win]
-        - cmake --build .
-        - cmake --build . --target check
-        - cmake --build . --target clean
+        - cd shared_standalone_tests
+        - cmake -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=ON -DBUILD_SHARED_LIBS=ON ${CMAKE_ARGS} -S src -B build  # [unix]
+        - cmake -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=ON -DBUILD_SHARED_LIBS=ON %CMAKE_ARGS% -S src -B build  # [win]
+        - cd build && cmake --build .  && cmake --build . --target check && cmake --build . --target clean
 
         - cd ../..  # [unix]
         - cd ..\\..  # [win]
@@ -123,7 +119,7 @@ outputs:
     test:
       commands:
         - test ! -f ${PREFIX}/include/secp256k1.h  # [unix]
-        - if exist %LIBRARY_INC%\\{{ name }}.h exit 1  # [win]
+        - if exist %LIBRARY_INC%\\secp256k1.h exit 1  # [win]
         - test ! -f ${PREFIX}/lib/{{ name }}{SHLIB_EXT}  # [unix]
         - if exist %LIBRARY_LIB%\\{{ name }}.lib exit 1  # [win]
         - if exist %LIBRARY_LIB%\\secp256k1.lib exit 1  # [win]
