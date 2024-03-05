@@ -47,7 +47,7 @@ outputs:
       - Library\\lib\\secp256k1.lib  # [win]
       - lib/pkgconfig/{{ name }}.pc  # [unix]
       - Library\\lib\\pkgconfig\\{{ name }}.pc  # [win]
-      - Library\\lib\\pkgconfig\\{{ name }}.tmp  # [win]
+      - Library\\lib\\pkgconfig\\tmp{{ name }}.pc  # [win]
       - lib/cmake/{{ name }}  # [unix]
       - Library\\lib\\cmake\\{{ name }}  # [win]
     requirements:
@@ -84,13 +84,14 @@ outputs:
         # pkg-config files for shared libraries
         - test -f ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
+        - if not exist %LIBRARY_LIB%\\pkgconfig\\tmp{{ name }}.pc exit 1  # [win]
         - pkg-config --exists {{ name }}
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%PREFIX%  # [win]
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "libdir=${exec_prefix}/Library/lib"  # [win]
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "includedir=${prefix}/Library/include"  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.tmp prefix=%PREFIX%  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.tmp "libdir=${exec_prefix}\Library\lib"  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.tmp "includedir=${prefix}\Library\include"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\tmp{{ name }}.pc prefix=%PREFIX%  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\tmp{{ name }}.pc "libdir=${exec_prefix}\Library\lib"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\tmp{{ name }}.pc "includedir=${prefix}\Library\include"  # [win]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc prefix=${PREFIX}  # [unix]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "libdir=\${exec_prefix}/lib"  # [unix]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "includedir=\${prefix}/include"  # [unix]
@@ -135,6 +136,8 @@ outputs:
         - test -f ${PREFIX}/lib/{{ name }}.so.{{ so_version }}  # [linux]
         - test -f ${PREFIX}/lib/{{ name }}.{{ so_major_version }}.dylib  # [osx]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
+        - regsvr32 /s %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
+
 
 about:
   home: https://github.com/bitcoin-core/secp256k1

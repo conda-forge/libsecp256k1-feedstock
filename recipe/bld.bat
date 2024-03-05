@@ -59,10 +59,10 @@ setlocal EnableDelayedExpansion
 for /f "tokens=*" %%a in (%PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc) do (
   set "line=%%a"
   set "line=!line:/=\!"
-  echo !line!>> libsecp256k1.tmp
+  echo !line!>> tmplibsecp256k1.pcc
 )
 endlocal
-copy /y libsecp256k1.tmp %PREFIX%\Library\lib\pkgconfig\libsecp256k1.tmp > nul
+copy /y tmplibsecp256k1.pc %PREFIX%\Library\lib\pkgconfig\tmplibsecp256k1.pc > nul
 
 :: move /y "%PKG_CONFIG_FILE%.tmp" "%PKG_CONFIG_FILE%" > nul
 
