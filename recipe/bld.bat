@@ -48,6 +48,9 @@ if %ERRORLEVEL% neq 0 exit 1
 cmake --build . --target install --config Release --clean-first
 if %ERRORLEVEL% neq 0 exit 1
 
+cd ..
+rmdir /s /q %BUILD_DIR%
+
 :: Duplicate windows library for -lsecp256k1 (from pkg-config) to work with MSVC
 copy /y %PREFIX%\Library\lib\libsecp256k1.lib %PREFIX%\Library\lib\secp256k1.lib > nul
 
@@ -60,12 +63,9 @@ if exist "%PKG_CONFIG_FILE%" (
     set "line=!line:/=\!"
     echo(!line!
   ) > "%PKG_CONFIG_FILE%.tmp"
-  move /y "%PKG_CONFIG_FILE%.tmp" "%PKG_CONFIG_FILE%" > nul
+  :: move /y "%PKG_CONFIG_FILE%.tmp" "%PKG_CONFIG_FILE%" > nul
   endlocal
 )
-
-cd ..
-rmdir /s /q %BUILD_DIR%
 
 :CopyFiles
   set "LOCAL_SRC_DIR=%~1"

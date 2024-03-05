@@ -84,8 +84,11 @@ outputs:
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
         - pkg-config --exists {{ name }}
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%PREFIX%  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "libdir=${exec_prefix}\Library\lib"  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "includedir=${prefix}\Library\include"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "libdir=${exec_prefix}/Library/lib"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "includedir=${prefix}/Library/include"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc.tmp prefix=%PREFIX%  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc.tmp "libdir=${exec_prefix}\Library\lib"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc.tmp "includedir=${prefix}\Library\include"  # [win]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc prefix=${PREFIX}  # [unix]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "libdir=\${exec_prefix}/lib"  # [unix]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "includedir=\${prefix}/include"  # [unix]
