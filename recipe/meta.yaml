@@ -47,6 +47,7 @@ outputs:
       - Library\\lib\\secp256k1.lib  # [win]
       - lib/pkgconfig/{{ name }}.pc  # [unix]
       - Library\\lib\\pkgconfig\\{{ name }}.pc  # [win]
+      - Library\\lib\\pkgconfig\\{{ name }}.tmp  # [win]
       - lib/cmake/{{ name }}  # [unix]
       - Library\\lib\\cmake\\{{ name }}  # [win]
     requirements:
