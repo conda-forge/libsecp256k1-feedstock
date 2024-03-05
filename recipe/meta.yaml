@@ -78,6 +78,7 @@ outputs:
         - if not exist %LIBRARY_LIB%\\secp256k1.lib exit 1  # [win]
         - if not exist %LIBRARY_LIB%\\{{ name }}.lib exit 1  # [win]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
+        - regsvr32 /s %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
 
         # pkg-config files for shared libraries
         - test -f ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]
@@ -86,9 +87,9 @@ outputs:
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%PREFIX%  # [win]
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "libdir=${exec_prefix}/Library/lib"  # [win]
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "includedir=${prefix}/Library/include"  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc.tmp prefix=%PREFIX%  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc.tmp "libdir=${exec_prefix}\Library\lib"  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc.tmp "includedir=${prefix}\Library\include"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.tmp prefix=%PREFIX%  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.tmp "libdir=${exec_prefix}\Library\lib"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.tmp "includedir=${prefix}\Library\include"  # [win]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc prefix=${PREFIX}  # [unix]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "libdir=\${exec_prefix}/lib"  # [unix]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "includedir=\${prefix}/include"  # [unix]

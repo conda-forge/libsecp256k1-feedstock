@@ -55,17 +55,16 @@ rmdir /s /q %BUILD_DIR%
 copy /y %PREFIX%\Library\lib\libsecp256k1.lib %PREFIX%\Library\lib\secp256k1.lib > nul
 
 :: Replace unix / with windows \ in .pc file
-set "PKG_CONFIG_FILE=%PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc"
-if exist "%PKG_CONFIG_FILE%" (
-  setlocal EnableDelayedExpansion
-  for /f "tokens=*" %%a in ('type "%PKG_CONFIG_FILE%"') do (
-    set "line=%%a"
-    set "line=!line:/=\!"
-    echo(!line!
-  ) > "%PKG_CONFIG_FILE%.tmp"
-  :: move /y "%PKG_CONFIG_FILE%.tmp" "%PKG_CONFIG_FILE%" > nul
-  endlocal
+setlocal EnableDelayedExpansion
+for /f "tokens=*" %%a in (%PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc) do (
+  set "line=%%a"
+  set "line=!line:/=\!"
+  echo !line!>> libsecp256k1.tmp
 )
+endlocal
+copy /y libsecp256k1.tmp %PREFIX%\Library\lib\pkgconfig\libsecp256k1.tmp > nul
+
+:: move /y "%PKG_CONFIG_FILE%.tmp" "%PKG_CONFIG_FILE%" > nul
 
 :CopyFiles
   set "LOCAL_SRC_DIR=%~1"
