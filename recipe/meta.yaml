@@ -79,7 +79,7 @@ outputs:
         - if not exist %LIBRARY_LIB%\\secp256k1.lib exit 1  # [win]
         - if not exist %LIBRARY_LIB%\\{{ name }}.lib exit 1  # [win]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
-        - regsvr32 /s %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
+        # - regsvr32 /s %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
 
         # pkg-config files for shared libraries
         - test -f ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]
@@ -136,8 +136,8 @@ outputs:
         - test -f ${PREFIX}/lib/{{ name }}.so.{{ so_version }}  # [linux]
         - test -f ${PREFIX}/lib/{{ name }}.{{ so_major_version }}.dylib  # [osx]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
-        - regsvr32.exe /s /u %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
-        - regsvr32.exe /s %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
+        # - regsvr32.exe /s /u %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
+        # - regsvr32.exe /s %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
 
 
 about:
