@@ -136,9 +136,8 @@ outputs:
         - test -f ${PREFIX}/lib/{{ name }}.so.{{ so_version }}  # [linux]
         - test -f ${PREFIX}/lib/{{ name }}.{{ so_major_version }}.dylib  # [osx]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
-        - vswhere regsvr32  # [win]
-        - regsvr32 /s /u %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
-        - regsvr32 /s %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
+        - %systemroot%\SysWoW64\regsvr32.exe /s /u %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
+        - %systemroot%\SysWoW64\regsvr32.exe /s %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
 
 
 about:
