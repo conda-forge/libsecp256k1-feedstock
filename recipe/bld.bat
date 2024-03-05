@@ -51,6 +51,19 @@ if %ERRORLEVEL% neq 0 exit 1
 :: Duplicate windows library for -lsecp256k1 (from pkg-config) to work with MSVC
 copy /y %PREFIX%\Library\lib\libsecp256k1.lib %PREFIX%\Library\lib\secp256k1.lib > nul
 
+:: Replace unix / with windows \ in .pc file
+set "PKG_CONFIG_FILE=%PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc"
+if exist "%PKG_CONFIG_FILE%" (
+  setlocal EnableDelayedExpansion
+  for /f "tokens=*" %%a in ('type "%PKG_CONFIG_FILE%"') do (
+    set "line=%%a"
+    set "line=!line:/=\!"
+    echo(!line!
+  ) > "%PKG_CONFIG_FILE%.tmp"
+  move /y "%PKG_CONFIG_FILE%.tmp" "%PKG_CONFIG_FILE%" > nul
+  endlocal
+)
+
 cd ..
 rmdir /s /q %BUILD_DIR%
 
