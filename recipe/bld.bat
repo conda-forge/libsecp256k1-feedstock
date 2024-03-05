@@ -42,7 +42,6 @@ cmake %CMAKE_ARGS% ^
     -D BUILD_SHARED_LIBS=%SECP256K1_BUILD_SHARED_LIBS% ^
     -D SECP256K1_INSTALL=%SECP256K1_INSTALL% ^
     -D SECP256K1_BUILD_TESTS=ON ^
-    -D SECP256K1_BUILD_EXHAUSTIVE_TESTS=OFF
 if %ERRORLEVEL% neq 0 exit 1
 
 cmake --build . --target install --config Release --clean-first
@@ -62,9 +61,7 @@ for /f "tokens=*" %%a in (%PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc) do (
   echo !line!>> tmplibsecp256k1.pc
 )
 endlocal
-copy /y tmplibsecp256k1.pc %PREFIX%\Library\lib\pkgconfig\tmplibsecp256k1.pc > nul
-
-:: move /y "%PKG_CONFIG_FILE%.tmp" "%PKG_CONFIG_FILE%" > nul
+copy /y tmplibsecp256k1.pc %PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc > nul
 
 :CopyFiles
   set "LOCAL_SRC_DIR=%~1"
