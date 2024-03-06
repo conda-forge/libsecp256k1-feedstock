@@ -24,7 +24,7 @@ source:
   sha256: 31b1a03c7365dbce7aff4be9526243da966c58a8b88b6255556d51b3016492c5
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
@@ -59,8 +59,8 @@ outputs:
     test:
       requires:
         - {{ compiler('c') }}
-        - make
         - cmake >=3.26
+        - make
         - pkg-config
         - python
       files:
@@ -84,8 +84,8 @@ outputs:
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
         - pkg-config --exists {{ name }}
         - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%PREFIX%  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "libdir=${exec_prefix}/Library/lib"  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "includedir=${prefix}/Library/include"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "libdir=${exec_prefix}\Library\lib"  # [win]
+        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "includedir=${prefix}\Library\include"  # [win]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc prefix=${PREFIX}  # [unix]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "libdir=\${exec_prefix}/lib"  # [unix]
         - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "includedir=\${prefix}/include"  # [unix]
@@ -120,6 +120,8 @@ outputs:
       build:
         - {{ compiler('c') }}
     test:
+      files:
+        - load_shared_library.py
       commands:
         - test ! -f ${PREFIX}/include/secp256k1.h  # [unix]
         - if exist %LIBRARY_INC%\\secp256k1.h exit 1  # [win]
@@ -130,6 +132,7 @@ outputs:
         - test -f ${PREFIX}/lib/{{ name }}.so.{{ so_version }}  # [linux]
         - test -f ${PREFIX}/lib/{{ name }}.{{ so_major_version }}.dylib  # [osx]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
+        - python load_shared_library.py %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
 
 about:
   home: https://github.com/bitcoin-core/secp256k1

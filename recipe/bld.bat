@@ -41,18 +41,36 @@ cmake %CMAKE_ARGS% ^
     -D SECP256K1_ENABLE_MODULE_RECOVERY=ON ^
     -D BUILD_SHARED_LIBS=%SECP256K1_BUILD_SHARED_LIBS% ^
     -D SECP256K1_INSTALL=%SECP256K1_INSTALL% ^
-    -D SECP256K1_BUILD_TESTS=OFF ^
-    -D SECP256K1_BUILD_EXHAUSTIVE_TESTS=OFF
+    -D SECP256K1_BUILD_TESTS=ON ^
 if %ERRORLEVEL% neq 0 exit 1
 
 cmake --build . --target install --config Release --clean-first
 if %ERRORLEVEL% neq 0 exit 1
 
+cd ..
+rmdir /s /q %BUILD_DIR%
+
 :: Duplicate windows library for -lsecp256k1 (from pkg-config) to work with MSVC
 copy /y %PREFIX%\Library\lib\libsecp256k1.lib %PREFIX%\Library\lib\secp256k1.lib > nul
 
-cd ..
-rmdir /s /q %BUILD_DIR%
+:: Replace unix / with windows \ in .pc file
+setlocal EnableDelayedExpansion
+for /f "tokens=*" %%a in (%PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc) do (
+  set "line=%%a"
+  set "line=!line:/=\!"
+  echo !line!>> tmplibsecp256k1.pc
+)
+endlocal
+copy /y tmplibsecp256k1.pc %PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc > nul
+
+:: Register shared library using regsvr32
+if %SECP256K1_BUILD_SHARED_LIBS%==ON (
+  for /f "tokens=*" %%a in ('dir /b /s %PREFIX%\Library\bin\*secp256k1*.dll') do (
+    set "LIBRARY=%%~nxa"
+    regsvr32 /s %%a
+    if %ERRORLEVEL% neq 0 exit 1
+  )
+)
 
 :CopyFiles
   set "LOCAL_SRC_DIR=%~1"
