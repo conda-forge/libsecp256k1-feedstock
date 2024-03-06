@@ -2,10 +2,6 @@
 import os
 
 
-def normalize_path_separator(s):
-    return s.replace('/', '-').replace('\\', '-')
-
-
 def find_regsvr32():
     return os.path.join(
         os.environ['SystemRoot'],
@@ -35,8 +31,6 @@ def load_library(library_name):
 
 def main(*args):
     library_path, *words = args
-    library_path = normalize_path_separator(library_path.strip())
-
     load_library(library_path)
 
 
