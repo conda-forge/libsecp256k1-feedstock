@@ -65,7 +65,7 @@ outputs:
         - python
       files:
         - shared_standalone_tests/
-        - load_shared_library.py
+        - verify_pkg_config.py
       commands:
         # Headers
         {% for header in headers %}
@@ -121,7 +121,7 @@ outputs:
         - {{ compiler('c') }}
     test:
       files:
-        - verify_pkg_config.py
+        - load_shared_library.py
       commands:
         - test ! -f ${PREFIX}/include/secp256k1.h  # [unix]
         - if exist %LIBRARY_INC%\\secp256k1.h exit 1  # [win]
