@@ -78,6 +78,7 @@ outputs:
         - if not exist %LIBRARY_LIB%\\secp256k1.lib exit 1  # [win]
         - if not exist %LIBRARY_LIB%\\{{ name }}.lib exit 1  # [win]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
+        - python load_shared_library.py %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
 
         # pkg-config files for shared libraries
         - test -f ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]

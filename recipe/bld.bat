@@ -63,6 +63,15 @@ for /f "tokens=*" %%a in (%PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc) do (
 endlocal
 copy /y tmplibsecp256k1.pc %PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc > nul
 
+:: Register shared library using regsvr32
+if %SECP256K1_BUILD_SHARED_LIBS%==ON (
+  for /f "tokens=*" %%a in ('dir /b /s %PREFIX%\Library\bin\*secp256k1*.dll') do (
+    set "LIBRARY=%%~nxa"
+    regsvr32 /s %%a
+    if %ERRORLEVEL% neq 0 exit 1
+  )
+)
+
 :CopyFiles
   set "LOCAL_SRC_DIR=%~1"
   set "LOCAL_TEST_DIR=%~2"
