@@ -53,16 +53,6 @@ rmdir /s /q %BUILD_DIR%
 :: Duplicate windows library for -lsecp256k1 (from pkg-config) to work with MSVC
 copy /y %PREFIX%\Library\lib\libsecp256k1.lib %PREFIX%\Library\lib\secp256k1.lib > nul
 
-:: Replace unix / with windows \ in .pc file
-setlocal EnableDelayedExpansion
-for /f "tokens=*" %%a in (%PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc) do (
-  set "line=%%a"
-  set "line=!line:/=\!"
-  echo !line!>> tmplibsecp256k1.pc
-)
-endlocal
-copy /y tmplibsecp256k1.pc %PREFIX%\Library\lib\pkgconfig\libsecp256k1.pc > nul
-
 :: Register shared library using regsvr32
 if %SECP256K1_BUILD_SHARED_LIBS%==ON (
   for /f "tokens=*" %%a in ('dir /b /s %PREFIX%\Library\bin\*secp256k1*.dll') do (
