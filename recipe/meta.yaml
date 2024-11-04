@@ -8,7 +8,7 @@
       "secp256k1_schnorrsig.h",
       "secp256k1_ellswift.h"
 ] %}
-{% set version = "0.5.1" %}
+{% set version = "0.6.0" %}
 # Look in the CMakeLists.txt for the updated library version (not the same as
 # the project version). Upstream does some strange math to convert lib_version
 # to so_version.
@@ -21,7 +21,7 @@ package:
 
 source:
   url: https://github.com/bitcoin-core/secp256k1/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 081f4730becba2715a6b0fd198fedd9e649a6caaa6a7d6d3cf0f9fa7483f2cf1
+  sha256: 785bb98e7d6705c51c8dfa8ac3af6aa2ccfa3774714d51c0b9e28fac1146e9f1
 
 build:
   number: 0
