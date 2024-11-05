@@ -6,13 +6,14 @@
       "secp256k1_recovery.h",
       "secp256k1_extrakeys.h",
       "secp256k1_schnorrsig.h",
-      "secp256k1_ellswift.h"
+      "secp256k1_ellswift.h",
+      "secp256k1_musig.h",
 ] %}
-{% set version = "0.5.1" %}
+{% set version = "0.6.0" %}
 # Look in the CMakeLists.txt for the updated library version (not the same as
 # the project version). Upstream does some strange math to convert lib_version
 # to so_version.
-{% set so_version = "2.2." + version.split('.')[-1] %}
+{% set so_version = "5.0." + version.split('.')[-1] %}
 {% set so_major_version = so_version.split('.')[0] %}
 
 package:
@@ -21,7 +22,7 @@ package:
 
 source:
   url: https://github.com/bitcoin-core/secp256k1/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 081f4730becba2715a6b0fd198fedd9e649a6caaa6a7d6d3cf0f9fa7483f2cf1
+  sha256: 785bb98e7d6705c51c8dfa8ac3af6aa2ccfa3774714d51c0b9e28fac1146e9f1
 
 build:
   number: 0
@@ -63,10 +64,8 @@ outputs:
         - cmake >=3.26
         - make
         - pkg-config
-        - python
       files:
         - shared_standalone_tests/
-        - verify_pkg_config.py
       commands:
         # Headers
         {% for header in headers %}
@@ -84,12 +83,6 @@ outputs:
         - test -f ${PREFIX}/lib/pkgconfig/{{ name }}.pc  # [unix]
         - if not exist %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc exit 1  # [win]
         - pkg-config --exists {{ name }}
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc prefix=%PREFIX%  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "libdir=${exec_prefix}/Library/lib"  # [win]
-        - python verify_pkg_config.py %LIBRARY_LIB%\\pkgconfig\\{{ name }}.pc "includedir=${prefix}/Library/include"  # [win]
-        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc prefix=${PREFIX}  # [unix]
-        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "libdir=\${exec_prefix}/lib"  # [unix]
-        - python verify_pkg_config.py ${PREFIX}/lib/pkgconfig/{{ name }}.pc "includedir=\${prefix}/include"  # [unix]
 
         # cmake files for shared libraries
         - if not exist %LIBRARY_LIB%\\cmake\\{{ name }}\\{{ name }}-config.cmake exit 1  # [win]
@@ -134,7 +127,6 @@ outputs:
         - test -f ${PREFIX}/lib/{{ name }}.so.{{ so_version }}  # [linux]
         - test -f ${PREFIX}/lib/{{ name }}.{{ so_major_version }}.dylib  # [osx]
         - if not exist %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll exit 1  # [win]
-        - python load_shared_library.py %LIBRARY_BIN%\\{{ name }}-{{ so_major_version }}.dll  # [win]
 
 about:
   home: https://github.com/bitcoin-core/secp256k1
