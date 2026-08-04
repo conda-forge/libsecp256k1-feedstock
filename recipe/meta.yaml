@@ -9,11 +9,11 @@
       "secp256k1_ellswift.h",
       "secp256k1_musig.h",
 ] %}
-{% set version = "0.7.1" %}
+{% set version = "0.8.0" %}
 # Look in the CMakeLists.txt for the updated library version (not the same as
 # the project version). Upstream does some strange math to convert lib_version
 # to so_version.
-{% set so_version = "6.0." + version.split('.')[-1] %}
+{% set so_version = "7.0." + version.split('.')[-1] %}
 {% set so_major_version = so_version.split('.')[0] %}
 
 package:
@@ -22,7 +22,7 @@ package:
 
 source:
   url: https://github.com/bitcoin-core/secp256k1/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 958f204dbafc117e73a2604285dc2eb2a5128344d3499c114dcba5de54cb7a9e
+  sha256: eb52b0e9239dff7dc26be5f9623567141b8720ec47da29eb3c1e0a660d17c8bb
 
 build:
   number: 0
