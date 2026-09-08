@@ -73,21 +73,27 @@ outputs:
           strict: true
           include:
             - secp256k1.h
-            - secp256k1_preallocated.h
             - secp256k1_ecdh.h
-            - secp256k1_recovery.h
-            - secp256k1_extrakeys.h
-            - secp256k1_schnorrsig.h
             - secp256k1_ellswift.h
+            - secp256k1_extrakeys.h
             - secp256k1_musig.h
+            - secp256k1_preallocated.h
+            - secp256k1_recovery.h
+            - secp256k1_schnorrsig.h
+            - secp256k1_silentpayments.h
           lib:
             - libsecp256k1
             - if: not unix
               then:
                 - secp256k1
           files:
-            - lib/pkgconfig/libsecp256k1.pc
             - lib/cmake/libsecp256k1/libsecp256k1-config.cmake
+            - lib/cmake/libsecp256k1/libsecp256k1-config-version.cmake
+            - lib/cmake/libsecp256k1/libsecp256k1-targets.cmake
+            - lib/cmake/libsecp256k1/libsecp256k1-targets-release.cmake
+            - lib/pkgconfig/libsecp256k1.pc
+            # Test artifacts
+            - etc/conda/test-files/libsecp256k1/*
 
       - script:
           - pkg-config --exists libsecp256k1
