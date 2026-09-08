@@ -8,6 +8,7 @@ context:
   # lib_version into so_version. Re-check both values on every version bump.
   so_version: "7.0.0"
   so_major_version: "7"
+  library: ${{ "" if unix else "Library/" }}
 
 recipe:
   name: libsecp256k1-split
@@ -32,9 +33,9 @@ outputs:
       build:
       - ${{ compiler('c') }}
       - ${{ stdlib('c') }}
+      - brush
       - cmake >=3.26
       - ninja
-      - brush
 
   - package:
       name: libsecp256k1
@@ -42,24 +43,13 @@ outputs:
     inherit: build-cache
     build:
       files:
-        - if: unix
+        - ${{ library }}include/secp256k1*
+        - ${{ library }}lib/pkgconfig/libsecp256k1.pc
+        - ${{ library }}lib/cmake/libsecp256k1/*
+        - ${{ library }}lib/libsecp256k1.${{ "so" if linux else "dylib" if osx else "lib" }}
+        - if: not unix
           then:
-            - include/secp256k1*
-            - lib/pkgconfig/libsecp256k1.pc
-            - lib/cmake/libsecp256k1/**
-        - if: linux
-          then:
-            - lib/libsecp256k1.so
-        - if: osx
-          then:
-            - lib/libsecp256k1.dylib
-        - if: win
-          then:
-            - Library/include/secp256k1*
-            - Library/lib/libsecp256k1.lib
-            - Library/lib/secp256k1.lib
-            - Library/lib/pkgconfig/libsecp256k1.pc
-            - Library/lib/cmake/libsecp256k1/**
+            - ${{ library }}lib/secp256k1.lib
     requirements:
       build:
         - ${{ compiler('c') }}
@@ -89,11 +79,11 @@ outputs:
               then:
                 - secp256k1
           files:
-            - lib/cmake/libsecp256k1/libsecp256k1-config.cmake
-            - lib/cmake/libsecp256k1/libsecp256k1-config-version.cmake
-            - lib/cmake/libsecp256k1/libsecp256k1-targets.cmake
-            - lib/cmake/libsecp256k1/libsecp256k1-targets-release.cmake
-            - lib/pkgconfig/libsecp256k1.pc
+            - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-config.cmake
+            - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-config-version.cmake
+            - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-targets.cmake
+            - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-targets-release.cmake
+            - ${{ library }}lib/pkgconfig/libsecp256k1.pc
             # Test artifacts
             - etc/conda/test-files/libsecp256k1/*
 
@@ -121,10 +111,10 @@ outputs:
         requirements:
           build:
             - ${{ compiler('c') }}
+            - brush
             - cmake >=3.26
             - ninja
             - pkg-config
-            - brush
         files:
           recipe:
             - shared_standalone_tests/
@@ -154,7 +144,7 @@ outputs:
             - lib/libsecp256k1.${{ so_major_version }}.dylib
         - if: win
           then:
-            - Library/bin/libsecp256k1-${{ so_major_version }}.dll
+            - ${{ library }}bin/libsecp256k1-${{ so_major_version }}.dll
     requirements:
       build:
         - ${{ compiler('c') }}
@@ -174,7 +164,7 @@ outputs:
                 - lib/libsecp256k1.${{ so_major_version }}.dylib
             - if: not unix
               then:
-                Library/bin/libsecp256k1-${{ so_major_version }}.dll
+                - ${{ library }}bin/libsecp256k1-${{ so_major_version }}.dll
 
 about:
   homepage: https://github.com/bitcoin-core/secp256k1
