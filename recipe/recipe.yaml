@@ -47,9 +47,6 @@ outputs:
         - ${{ library }}lib/pkgconfig/libsecp256k1.pc
         - ${{ library }}lib/cmake/libsecp256k1/*
         - ${{ library }}lib/libsecp256k1.${{ "so" if linux else "dylib" if osx else "lib" }}
-        - if: not unix
-          then:
-            - ${{ library }}lib/secp256k1.lib
     requirements:
       build:
         - ${{ compiler('c') }}
@@ -74,11 +71,13 @@ outputs:
             - secp256k1_schnorrsig.h
             - secp256k1_silentpayments.h
           lib:
-            - libsecp256k1
+            - if: unix
+              then:
+                - libsecp256k1
+          files:
             - if: not unix
               then:
-                - secp256k1
-          files:
+                - ${{ library }}lib/{libs,s}ecp256k1.lib
             - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-config.cmake
             - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-config-version.cmake
             - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-targets.cmake
