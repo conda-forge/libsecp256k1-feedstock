@@ -117,12 +117,10 @@ outputs:
         requirements:
           build:
             - ${{ compiler('c') }}
+            - bash >=5.2
             - cmake >=3.26
             - make
             - pkg-config
-            - if: not unix
-              then:
-                - m2-bash >=5.2
         files:
           recipe:
             - shared_standalone_tests/
