@@ -1,0 +1,196 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+context:
+  name: libsecp256k1
+  version: "0.8.0"
+  # Look in the upstream CMakeLists.txt for the library version -- it is NOT the
+  # same as the project version. Upstream does some arithmetic to convert
+  # lib_version into so_version. Re-check both values on every version bump.
+  so_version: "7.0.0"
+  so_major_version: "7"
+  library: ${{ "" if unix else "Library/" }}
+
+recipe:
+  name: libsecp256k1-split
+  version: ${{ version }}
+
+source:
+  url: https://github.com/bitcoin-core/secp256k1/archive/refs/tags/v${{ version }}.tar.gz
+  sha256: eb52b0e9239dff7dc26be5f9623567141b8720ec47da29eb3c1e0a660d17c8bb
+
+build:
+  number: 1
+
+# Build once, then split the installed files across the two outputs below.
+outputs:
+  - staging:
+      name: build-cache
+    build:
+      script:
+        file: build.sh
+        interpreter: brush
+    requirements:
+      build:
+      - ${{ compiler('c') }}
+      - ${{ stdlib('c') }}
+      - brush
+      - cmake >=3.26
+      - ninja
+
+  - package:
+      name: libsecp256k1
+      version: ${{ version }}
+    inherit: build-cache
+    build:
+      # This package ships only headers, cmake/pkg-config files and the
+      # unversioned .so symlink - nothing with a DT_NEEDED record - so the
+      # run dependency on libsecp256k1-N is invisible to the overdepending
+      # check even though the symlink target and the .pc file both resolve
+      # into it. Suppress here only; keep the check active for other outputs.
+      dynamic_linking:
+        overdepending_behavior: ignore
+      files:
+        - ${{ library }}include/secp256k1*
+        - ${{ library }}lib/pkgconfig/libsecp256k1.pc
+        - ${{ library }}lib/cmake/libsecp256k1/*
+        - ${{ library }}lib/libsecp256k1.${{ "so" if linux else "dylib" if osx else "lib" }}
+        - if: not unix
+          then:
+            - ${{ library }}lib/secp256k1.lib
+    requirements:
+      build:
+        - ${{ compiler('c') }}
+        - ${{ stdlib('c') }}
+      host:
+        - ${{ pin_subpackage('libsecp256k1-' ~ so_major_version, exact=True) }}
+      run:
+        - ${{ pin_subpackage('libsecp256k1-' ~ so_major_version, exact=True) }}
+      run_exports:
+        - ${{ pin_subpackage('libsecp256k1-' ~ so_major_version) }}
+    tests:
+      - package_contents:
+          strict: true
+          include:
+            - secp256k1.h
+            - secp256k1_ecdh.h
+            - secp256k1_ellswift.h
+            - secp256k1_extrakeys.h
+            - secp256k1_musig.h
+            - secp256k1_preallocated.h
+            - secp256k1_recovery.h
+            - secp256k1_schnorrsig.h
+            - secp256k1_silentpayments.h
+          lib:
+            - if: unix
+              then:
+                - libsecp256k1
+          files:
+            - if: not unix
+              then:
+                - ${{ library }}lib/libsecp256k1.lib
+                - ${{ library }}lib/secp256k1.lib
+            - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-config.cmake
+            - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-config-version.cmake
+            - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-targets.cmake
+            - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-targets-release.cmake
+            - ${{ library }}lib/pkgconfig/libsecp256k1.pc
+            # Test artifacts
+            - etc/conda/test-files/libsecp256k1/*
+
+      - script:
+          - pkg-config --exists libsecp256k1
+        requirements:
+          build:
+            - pkg-config
+
+      - script:
+          interpreter: brush
+          content: |
+            # Standalone build against the installed library. The upstream
+            # sources needed to compile the tests are staged here at test
+            # time (see `files:` below) rather than being copied into the
+            # recipe directory during the build.
+            cp src/tests.c src/tests_exhaustive.c src/secp256k1.c shared_standalone_tests/src/
+            cp -R src/modules src/wycheproof shared_standalone_tests/src/
+            cp src/*.h shared_standalone_tests/src/
+            cp -R cmake shared_standalone_tests/src/
+            cp -R include contrib shared_standalone_tests/
+            cd shared_standalone_tests
+            cmake -G Ninja -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=ON -DBUILD_SHARED_LIBS=ON ${CMAKE_ARGS} -S src -B build
+            cd build && cmake --build . && cmake --build . --target check && cmake --build . --target clean
+        requirements:
+          build:
+            - ${{ compiler('c') }}
+            - brush
+            - cmake >=3.26
+            - ninja
+            - pkg-config
+        files:
+          recipe:
+            - shared_standalone_tests/
+          source:
+            - src/
+            - include/
+            - contrib/
+            - cmake/
+      # - downstream: libsecp256k1-py-bindings
+      - downstream: coincurve
+
+  # ---------------------------------------------------------------------------
+  # Runtime package: versioned shared library only.
+  # ---------------------------------------------------------------------------
+  - package:
+      name: libsecp256k1-${{ so_major_version }}
+      version: ${{ version }}
+    inherit: build-cache
+    build:
+      files:
+        - if: linux
+          then:
+            - lib/libsecp256k1.so.${{ so_major_version }}
+            - lib/libsecp256k1.so.${{ so_version }}
+        - if: osx
+          then:
+            - lib/libsecp256k1.${{ so_major_version }}.dylib
+        - if: not unix
+          then:
+            - ${{ library }}bin/libsecp256k1-${{ so_major_version }}.dll
+    requirements:
+      build:
+        - ${{ compiler('c') }}
+        - ${{ stdlib('c') }}
+      run_exports:
+        - ${{ pin_subpackage('libsecp256k1-' ~ so_major_version) }}
+    tests:
+      - package_contents:
+          strict: true
+          files:
+            - if: linux
+              then:
+                - lib/libsecp256k1.so.${{ so_major_version }}
+                - lib/libsecp256k1.so.${{ so_version }}
+            - if: osx
+              then:
+                - lib/libsecp256k1.${{ so_major_version }}.dylib
+            - if: not unix
+              then:
+                - ${{ library }}bin/libsecp256k1-${{ so_major_version }}.dll
+
+about:
+  homepage: https://github.com/bitcoin-core/secp256k1
+  summary: Optimized C library for ECDSA signatures and secret/public key operations on curve secp256k1.
+  description: |
+    This library is intended to be the highest quality publicly available
+    library for cryptography on the secp256k1 curve. However, the primary
+    focus of its development has been for usage in the Bitcoin system and
+    usage unlike Bitcoin's may be less well tested, verified, or suffer
+    from a less well thought out interface. Correct usage requires some
+    care and consideration that the library is fit for your application's purpose.
+  license: MIT
+  license_file:
+    - COPYING
+
+extra:
+  recipe-maintainers:
+    - MementoRC
+  feedstock-name: libsecp256k1
