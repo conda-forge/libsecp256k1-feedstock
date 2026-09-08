@@ -1,16 +1,6 @@
 #!/usr/bin/env bash
 set -ex
 
-# Prepare post-install tests
-TEST_DIR="${RECIPE_DIR}/shared_standalone_tests"
-cp ${SRC_DIR}/src/tests.c ${TEST_DIR}/src
-cp ${SRC_DIR}/src/tests_exhaustive.c ${TEST_DIR}/src
-cp ${SRC_DIR}/src/secp256k1.c ${TEST_DIR}/src
-(cd ${SRC_DIR}; tar cf - include | (cd ${TEST_DIR}; tar xf -))
-(cd ${SRC_DIR}; tar cf - contrib | (cd ${TEST_DIR}; tar xf -))
-(cd ${SRC_DIR}; tar cf - cmake | (cd ${TEST_DIR}/src; tar xf -))
-(cd ${SRC_DIR}/src; tar cf - *.h modules/*/*.h wycheproof/*.h | (cd ${TEST_DIR}/src; tar xf -))
-
 # Build environment
 export SECP256K1_BUILD_SHARED_LIBS="ON"
 export SECP256K1_INSTALL="ON"
