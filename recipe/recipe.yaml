@@ -27,12 +27,14 @@ outputs:
     build:
       script:
         file: build.sh
+        interpreter: brush
     requirements:
       build:
       - ${{ compiler('c') }}
       - ${{ stdlib('c') }}
       - cmake >=3.26
-      - make
+      - ninja
+      - brush
 
   - package:
       name: libsecp256k1
@@ -102,25 +104,27 @@ outputs:
             - pkg-config
 
       - script:
-          # Standalone build against the installed library. The upstream
-          # sources needed to compile the tests are staged here at test
-          # time (see `files:` below) rather than being copied into the
-          # recipe directory during the build.
-          - cp src/tests.c src/tests_exhaustive.c src/secp256k1.c shared_standalone_tests/src/
-          - cp -R src/modules src/wycheproof shared_standalone_tests/src/
-          - cp src/*.h shared_standalone_tests/src/
-          - cp -R cmake shared_standalone_tests/src/
-          - cp -R include contrib shared_standalone_tests/
-          - cd shared_standalone_tests
-          - cmake -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=ON -DBUILD_SHARED_LIBS=ON ${CMAKE_ARGS} -S src -B build
-          - cd build && cmake --build . && cmake --build . --target check && cmake --build . --target clean
+          interpreter: brush
+          content: |
+            # Standalone build against the installed library. The upstream
+            # sources needed to compile the tests are staged here at test
+            # time (see `files:` below) rather than being copied into the
+            # recipe directory during the build.
+            cp src/tests.c src/tests_exhaustive.c src/secp256k1.c shared_standalone_tests/src/
+            cp -R src/modules src/wycheproof shared_standalone_tests/src/
+            cp src/*.h shared_standalone_tests/src/
+            cp -R cmake shared_standalone_tests/src/
+            cp -R include contrib shared_standalone_tests/
+            cd shared_standalone_tests
+            cmake -G Ninja -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=ON -DBUILD_SHARED_LIBS=ON ${CMAKE_ARGS} -S src -B build
+            cd build && cmake --build . && cmake --build . --target check && cmake --build . --target clean
         requirements:
           build:
             - ${{ compiler('c') }}
-            - bash >=5.2
             - cmake >=3.26
-            - make
+            - ninja
             - pkg-config
+            - brush
         files:
           recipe:
             - shared_standalone_tests/
