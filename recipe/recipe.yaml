@@ -174,7 +174,7 @@ outputs:
                 - lib/libsecp256k1.${{ so_major_version }}.dylib
             - if: not unix
               then:
-                Library/lib/libsecp256k1-${{ so_major_version }}.dll
+                Library/bin/libsecp256k1-${{ so_major_version }}.dll
 
 about:
   homepage: https://github.com/bitcoin-core/secp256k1
