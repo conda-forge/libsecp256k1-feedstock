@@ -42,6 +42,13 @@ outputs:
       version: ${{ version }}
     inherit: build-cache
     build:
+      # This package ships only headers, cmake/pkg-config files and the
+      # unversioned .so symlink - nothing with a DT_NEEDED record - so the
+      # run dependency on libsecp256k1-N is invisible to the overdepending
+      # check even though the symlink target and the .pc file both resolve
+      # into it. Suppress here only; keep the check active for other outputs.
+      dynamic_linking:
+        overdepending_behavior: ignore
       files:
         - ${{ library }}include/secp256k1*
         - ${{ library }}lib/pkgconfig/libsecp256k1.pc
@@ -50,9 +57,6 @@ outputs:
         - if: not unix
           then:
             - ${{ library }}lib/secp256k1.lib
-      # run dependency on libsecp256k1-N is invisible to the overdepending
-      dynamic_linking:
-        overdepending_behavior: ignore
     requirements:
       build:
         - ${{ compiler('c') }}
@@ -130,7 +134,7 @@ outputs:
             - contrib/
             - cmake/
       # - downstream: libsecp256k1-py-bindings
-      # - downstream: coincurve
+      - downstream: coincurve
 
   # ---------------------------------------------------------------------------
   # Runtime package: versioned shared library only.
