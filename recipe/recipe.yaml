@@ -47,6 +47,12 @@ outputs:
         - ${{ library }}lib/pkgconfig/libsecp256k1.pc
         - ${{ library }}lib/cmake/libsecp256k1/*
         - ${{ library }}lib/libsecp256k1.${{ "so" if linux else "dylib" if osx else "lib" }}
+        - if: not unix
+          then:
+            - ${{ library }}lib/secp256k1.lib
+      # run dependency on libsecp256k1-N is invisible to the overdepending
+      dynamic_linking:
+        overdepending_behavior: ignore
     requirements:
       build:
         - ${{ compiler('c') }}
@@ -77,7 +83,8 @@ outputs:
           files:
             - if: not unix
               then:
-                - ${{ library }}lib/{libs,s}ecp256k1.lib
+                - ${{ library }}lib/libsecp256k1.lib
+                - ${{ library }}lib/secp256k1.lib
             - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-config.cmake
             - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-config-version.cmake
             - ${{ library }}lib/cmake/libsecp256k1/libsecp256k1-targets.cmake
@@ -141,7 +148,7 @@ outputs:
         - if: osx
           then:
             - lib/libsecp256k1.${{ so_major_version }}.dylib
-        - if: win
+        - if: not unix
           then:
             - ${{ library }}bin/libsecp256k1-${{ so_major_version }}.dll
     requirements:
